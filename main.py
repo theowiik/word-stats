@@ -1,6 +1,15 @@
+from dataclasses import dataclass
+from typing import List, Tuple
+
 import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
+
+
+@dataclass
+class WordSetInfo:
+    source_name: str
+    word_usages: list[tuple[str, int]]
 
 
 def read_file(filename):
@@ -17,14 +26,20 @@ def sort_and_clean(dict):
     return a
 
 
-def analyse_file(filename):
+def get_words(filename):
     a = []
 
-    for line in read_file('data/data.txt').splitlines():
+    for line in read_file(filename).splitlines():
         if not line:
             continue
 
         a += line.split(" ")
+
+    return a
+
+
+def analyse_file(filename) -> WordSetInfo:
+    a = get_words(filename)
 
     common = {}
 
@@ -37,7 +52,25 @@ def analyse_file(filename):
     # print(common)
 
     a = sort_and_clean(common)
-    return a
+
+    return WordSetInfo(source_name=filename, word_usages=a)
+
+
+def combine(a1: WordSetInfo, a2: WordSetInfo) -> WordSetInfo:
+    set1 = {}
+
+    for pair in a1.word_usages:
+        set1[pair[0]] = pair[1]
+
+    for pair in a2.word_usages:
+        if pair[0] in set1:
+            set1[pair[0]] += pair[1]
+        else:
+            set1[pair[0]] = pair[1]
+
+    combined = sort_and_clean(set1)
+
+    return WordSetInfo(source_name='combined', word_usages=combined)
 
 
 def main():
@@ -46,6 +79,10 @@ def main():
 
     a2 = analyse_file('data/data2.txt')
     pp.pprint(a2)
+
+    total = combine(a1, a2)
+
+    pp.pprint(total)
 
 
 if __name__ == '__main__':
