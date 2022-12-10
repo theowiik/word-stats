@@ -1,32 +1,52 @@
+import pprint
+
+pp = pprint.PrettyPrinter(indent=2)
+
+
 def read_file(filename):
     with open(filename, 'r') as f:
         return f.read()
 
 
 def sort_and_clean(dict):
-    print(dict)
+    a = []
 
-    # a.sort()
-    # return sorted(a, key=lambda x, reverse=True)
-    return []
+    for pair in sorted(dict.items(), key=lambda x: x[1], reverse=True):
+        a.append(pair)
+
+    return a
 
 
-a = []
-for line in read_file('data/data.txt').splitlines():
-    if not line:
-        continue
+def analyse_file(filename):
+    a = []
 
-    a += line.split(" ")
+    for line in read_file('data/data.txt').splitlines():
+        if not line:
+            continue
 
-common = {}
+        a += line.split(" ")
 
-for word in a:
-    if word in common:
-        common[word] += 1
-    else:
-        common[word] = 1
+    common = {}
 
-# print(common)
+    for word in a:
+        if word in common:
+            common[word] += 1
+        else:
+            common[word] = 1
 
-sort_and_clean(common)
+    # print(common)
 
+    a = sort_and_clean(common)
+    return a
+
+
+def main():
+    a1 = analyse_file('data/data.txt')
+    pp.pprint(a1)
+
+    a2 = analyse_file('data/data2.txt')
+    pp.pprint(a2)
+
+
+if __name__ == '__main__':
+    main()
