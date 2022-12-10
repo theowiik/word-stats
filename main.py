@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List
 
 import pprint
 
@@ -75,10 +75,14 @@ def combine(a1: WordSetInfo, a2: WordSetInfo) -> WordSetInfo:
 
 
 def get_txt_files(directory: str) -> List[str]:
-    file_list = os.listdir(directory)
+    txt_files = []
 
-    txt_files = [os.path.join(directory, f)
-                 for f in file_list if f.endswith('.txt')]
+    for root, _, files in os.walk(directory):
+        for f in files:
+            if f.endswith('.txt'):
+                file_path = os.path.join(root, f)
+
+                txt_files.append(file_path)
 
     return txt_files
 
@@ -88,6 +92,7 @@ def main():
 
     for f in get_txt_files('data'):
         all.append(analyse_file(f))
+        print(f)
 
     pp.pprint(all)
 
