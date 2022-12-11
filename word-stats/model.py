@@ -111,7 +111,7 @@ def main():
         all.append(analyse_file(f))
         print(f)
 
-    # pp.pprint(all)
+    pp.pprint(all[0].word_usages[:10])
 
     print(percentage_swear_words(all[0].word_usages))
 
