@@ -11,21 +11,20 @@ pp = pprint.PrettyPrinter(indent=2)
 @dataclass
 class WordSetInfo:
     source_name: str
-    word_usages: list[tuple[str, int]]
+    word_usages: dict[str, int]
+
+    def get_sorted_word_usage_list(self) -> list[tuple[str, int]]:
+        a = []
+
+        for pair in sorted(self.word_usages.items(), key=lambda x: x[1], reverse=True):
+            a.append(pair)
+
+        return a
 
 
 def read_file(filename):
     with open(filename, 'r') as f:
         return f.read()
-
-
-def sort_and_clean(dict):
-    a = []
-
-    for pair in sorted(dict.items(), key=lambda x: x[1], reverse=True):
-        a.append(pair)
-
-    return a
 
 
 def get_words(filename):
@@ -43,36 +42,47 @@ def get_words(filename):
 def analyse_file(filename) -> WordSetInfo:
     a = get_words(filename)
 
-    common = {}
+    word_usages = {}
 
     for word in a:
-        if word in common:
-            common[word] += 1
+        if word in word_usages:
+            word_usages[word] += 1
         else:
-            common[word] = 1
+            word_usages[word] = 1
 
-    # print(common)
-
-    a = sort_and_clean(common)
-
-    return WordSetInfo(source_name=filename, word_usages=a)
+    return WordSetInfo(source_name=filename, word_usages=word_usages)
 
 
-def combine(a1: WordSetInfo, a2: WordSetInfo) -> WordSetInfo:
-    set1 = {}
+def combine(word_set_1: WordSetInfo, word_set_2: WordSetInfo) -> WordSetInfo:
+    new_dict = {}
 
-    for pair in a1.word_usages:
-        set1[pair[0]] = pair[1]
+    w_usage_1 = word_set_1.word_usages
+    w_usage_2 = word_set_2.word_usages
 
-    for pair in a2.word_usages:
-        if pair[0] in set1:
-            set1[pair[0]] += pair[1]
+    for key, value in w_usage_1.items():
+        new_dict[key] = value
+
+    for key, value in w_usage_2.items():
+        if key in new_dict:
+            new_dict[key] += value
         else:
-            set1[pair[0]] = pair[1]
+            new_dict[key] = value
 
-    combined = sort_and_clean(set1)
+    return WordSetInfo(source_name='combined', word_usages=new_dict)
 
-    return WordSetInfo(source_name='combined', word_usages=combined)
+
+def combine_all(a) -> WordSetInfo:
+    if len(a) == 0:
+        return WordSetInfo(source_name='empty', word_usages={})
+    if len(a) == 1:
+        return WordSetInfo(source_name='combined', word_usages=a[0].word_usages)
+
+    combined = combine(a[0], a[1])
+
+    for i in range(2, len(a)):
+        combined = combine(combined, a[i])
+
+    return combined
 
 
 def get_txt_files(directory: str) -> List[str]:
@@ -104,16 +114,33 @@ def is_swear_word(word: str) -> bool:
     return rand > 50
 
 
+def count(word_set, words):
+    words_as_set = set(words)
+    count = 0
+
+    ordered_usage = word_set.get_sorted_word_usage_list()
+
+    only_words = [word[0] for word in ordered_usage]
+
+    for word in words_as_set:
+        if word in only_words:
+            count += word_set.word_usages[word]
+
+    return count
+
+
 def main():
     all = []
 
     for f in get_txt_files('data'):
-        all.append(analyse_file(f))
-        print(f)
+        w = analyse_file(f)
+        all.append(w)
 
-    pp.pprint(all[0].word_usages[:10])
+    combined = combine_all(all)
+    # pp.pprint(combined.get_sorted_word_usage_list())
 
-    print(percentage_swear_words(all[0].word_usages))
+    crazy_amount = count(combined, ['crazy'])
+    print(f'crazy: {crazy_amount}')
 
 
 if __name__ == '__main__':
