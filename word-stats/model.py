@@ -2,6 +2,7 @@ import os
 import math
 import random
 import pprint
+import re
 from dataclasses import dataclass
 from typing import List
 
@@ -27,20 +28,27 @@ def read_file(filename):
         return f.read()
 
 
-def get_words(filename):
+def get_cleaned_words(filename):
     a = []
 
     for line in read_file(filename).splitlines():
         if not line:
             continue
 
-        a += line.split(" ")
+        cleaned_strings = [clean_string(word)
+                           for word in line.split(" ") if word]
+        a += [word for word in cleaned_strings if word]
 
     return a
 
 
+def clean_string(string):
+    string = re.sub(r"[.,!?\"\'()–—’‘”“-]", '', string)
+    return string.lower().strip()
+
+
 def analyse_file(filename) -> WordSetInfo:
-    a = get_words(filename)
+    a = get_cleaned_words(filename)
 
     word_usages = {}
 
@@ -137,7 +145,7 @@ def main():
         all.append(w)
 
     combined = combine_all(all)
-    # pp.pprint(combined.get_sorted_word_usage_list())
+    pp.pprint(combined.get_sorted_word_usage_list())
 
     crazy_amount = count(combined, ['crazy'])
     print(f'crazy: {crazy_amount}')
