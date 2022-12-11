@@ -1,8 +1,9 @@
 import os
+import math
+import random
+import pprint
 from dataclasses import dataclass
 from typing import List
-
-import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -87,6 +88,22 @@ def get_txt_files(directory: str) -> List[str]:
     return txt_files
 
 
+def percentage_swear_words(words: list[str]) -> float:
+    swear_words = 0
+
+    for word in words:
+        if is_swear_word(word):
+            swear_words += 1
+
+    return swear_words / len(words)
+
+
+def is_swear_word(word: str) -> bool:
+    rand = math.floor(random.random() * 100)
+
+    return rand > 50
+
+
 def main():
     all = []
 
@@ -94,7 +111,9 @@ def main():
         all.append(analyse_file(f))
         print(f)
 
-    pp.pprint(all)
+    # pp.pprint(all)
+
+    print(percentage_swear_words(all[0].word_usages))
 
 
 if __name__ == '__main__':
