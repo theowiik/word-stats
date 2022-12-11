@@ -138,8 +138,8 @@ def is_swear_word(word: str) -> bool:
     return rand > 50
 
 
-def count(word_set, words):
-    words_as_set = set(words)
+def count(word_set, words_to_count):
+    words_as_set = set(words_to_count)
     count = 0
 
     ordered_usage = word_set.get_sorted_word_usage_list()
@@ -152,6 +152,19 @@ def count(word_set, words):
 
     return count
 
+def count_per_year(word_info_sets, words_to_count):
+    output = {}
+
+    for word_info in word_info_sets:
+        if word_info.year is None:
+            continue
+
+        if word_info.year not in output:
+            output[word_info.year] = count(word_info, words_to_count)
+        else:
+            output[word_info.year] += count(word_info, words_to_count)
+
+    return output
 
 def main():
     all = []
@@ -161,13 +174,11 @@ def main():
         all.append(w)
 
     combined = combine_all(all)
-    # pp.pprint(combined)
-
-    for x in all:
-        print(f'{x.source_name}: {x.year}')
 
     crazy_amount = count(combined, ['crazy'])
-    print(f'crazy: {crazy_amount}')
+    crazy_amount_per_year = count_per_year(all, ['crazy'])
+
+    pp.pprint(crazy_amount_per_year)
 
 
 if __name__ == '__main__':
