@@ -13,6 +13,7 @@ pp = pprint.PrettyPrinter(indent=2)
 class WordSetInfo:
     source_name: str
     word_usages: dict[str, int]
+    year: int | None = None
 
     def get_sorted_word_usage_list(self) -> list[tuple[str, int]]:
         a = []
@@ -37,6 +38,7 @@ def get_cleaned_words(filename):
 
         cleaned_strings = [clean_string(word)
                            for word in line.split(" ") if word]
+
         a += [word for word in cleaned_strings if word]
 
     return a
@@ -58,7 +60,21 @@ def analyse_file(filename) -> WordSetInfo:
         else:
             word_usages[word] = 1
 
-    return WordSetInfo(source_name=filename, word_usages=word_usages)
+    year_string = [x for x in filename.split('\\') if x.startswith('year_')]
+    year = None
+
+    if len(year_string) > 0:
+        try:
+            year = int(year_string[0].split('_')[1])
+        except ValueError:
+            raise ValueError(
+                f"Invalid year in filename: '{filename}', should be 'year_YYYY'")
+
+    return WordSetInfo(
+        source_name=filename,
+        word_usages=word_usages,
+        year=year
+    )
 
 
 def combine(word_set_1: WordSetInfo, word_set_2: WordSetInfo) -> WordSetInfo:
@@ -145,7 +161,10 @@ def main():
         all.append(w)
 
     combined = combine_all(all)
-    pp.pprint(combined.get_sorted_word_usage_list())
+    # pp.pprint(combined)
+
+    for x in all:
+        print(f'{x.source_name}: {x.year}')
 
     crazy_amount = count(combined, ['crazy'])
     print(f'crazy: {crazy_amount}')
