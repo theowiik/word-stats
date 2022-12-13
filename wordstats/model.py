@@ -175,10 +175,11 @@ def main():
 
     combined = combine_all(all)
 
-    crazy_amount = count(combined, ['crazy'])
-    crazy_amount_per_year = count_per_year(all, ['crazy'])
+    sortd = combined.get_sorted_word_usage_list();
+    pp.pprint(sortd[0:100])
 
-    pp.pprint(crazy_amount_per_year)
+    perfect_amount = count(combined, ['perfect'])
+    perfect_amount_per_year = count_per_year(all, ['perfect'])
 
 
 if __name__ == '__main__':
