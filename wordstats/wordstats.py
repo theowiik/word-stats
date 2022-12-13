@@ -1,5 +1,6 @@
 import pprint
 from model import get_txt_files, analyse_file, combine_all, count_per_year, count
+from view import plot_bar
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -19,6 +20,12 @@ def main():
 
     print(perfect_amount)
     pp.pprint(perfect_amount_per_year)
+
+    # Plot
+    labels = [x[0] for x in combined.get_sorted_word_usage_list()[0:15]]
+    values = [x[1] for x in combined.get_sorted_word_usage_list()[0:15]]
+
+    plot_bar(labels, values)
 
 if __name__ == '__main__':
     main()
