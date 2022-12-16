@@ -11,7 +11,8 @@ custom_template = dict(
     )
 )
 
-def plot_bar(labels, values):
+
+def create_bar_plot(labels, values):
     fig = go.Figure(go.Bar(
         x=values,
         y=labels,
@@ -26,32 +27,22 @@ def plot_bar(labels, values):
         paper_bgcolor='rgba(0, 0, 0, 0)',
     )
 
-    fig.show()
+    return fig
 
-# # ------------------------------
 
-# pie_labels = ['Swear', 'Other']
-# pie_values = [2, 8]
+def create_line_plot(labels, values):
+    fig = go.Figure(go.Scatter(
+        x=labels,
+        y=values,
+        mode='lines+markers',
+        line=dict(width=4)
+    ))
 
-# pie = go.Figure(go.Pie(
-#     labels=pie_labels,
-#     values=pie_values,
-#     # hole=.2,
-#     marker_colors=[color, '#494949'],
-#     textinfo='label+percent',
-# ))
+    fig.update_layout(
+        title='Most used words over time',
+        template=custom_template,
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+    )
 
-# pie.update_layout(
-#     title='Percentage curse words',
-#     template=custom_template,
-#     plot_bgcolor='rgba(0, 0, 0, 0)',
-#     paper_bgcolor='rgba(0, 0, 0, 0)',
-#     font=dict(size=40),
-#     textinfo='none'
-# )
-
-# # hide labels
-# pie.update_traces(textposition='inside', textinfo='none')
-
-# # pie.show()
-
+    return fig

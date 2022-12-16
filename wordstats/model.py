@@ -60,7 +60,8 @@ def analyse_file(filename) -> WordSetInfo:
         else:
             word_usages[word] = 1
 
-    year_string = [x for x in filename.split('\\') if x.startswith('year_')]
+    # TODO: This seems to be OS dependent, fix this
+    year_string = [x for x in filename.split('/') if x.startswith('year_')]
     year = None
 
     if len(year_string) > 0:
@@ -139,7 +140,7 @@ def is_swear_word(word: str) -> bool:
 
 
 def count(word_set, words_to_count):
-    words_as_set = set(words_to_count)
+    words_as_set = set([word.lower() for word in words_to_count if word])
     count = 0
 
     ordered_usage = word_set.get_sorted_word_usage_list()
@@ -176,7 +177,6 @@ def main():
     combined = combine_all(all)
 
     sortd = combined.get_sorted_word_usage_list();
-    pp.pprint(sortd[0:100])
 
     perfect_amount = count(combined, ['perfect'])
     perfect_amount_per_year = count_per_year(all, ['perfect'])
